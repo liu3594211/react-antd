@@ -1,0 +1,2 @@
+export const MAP_LOCATION = 'MAP_LOCATION'
+export const ASYNCHRONUS_DATA = 'ASYNCHRONUS_DATA'
