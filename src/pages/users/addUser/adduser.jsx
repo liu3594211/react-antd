@@ -8,16 +8,19 @@ export default class adduser extends Component {
 
 
 
-     onFinish = values => {
-      console.log('Success:', values);
-    };
   
      onFinishFailed = errorInfo => {
       console.log('Failed:', errorInfo);
     };
   
-
-
+    onValuesChange = value=>{
+      console.log('onValuesChange',value);
+      
+    }
+    onFinish = values => {
+      console.log('Success:', values);
+    };
+  
 
   render() {
     const layout = {
@@ -49,9 +52,6 @@ export default class adduser extends Component {
         message: "密码必须是英文、数组或下划线组成"
       }
     ]
- 
-
-
     const email = [   
         { required: true, message: "请输入邮箱地址" },
         {
@@ -59,7 +59,6 @@ export default class adduser extends Component {
           message: "请输入正确的邮箱"
         }
     ]
-
     const phone = [   
       { required: true, message: "请输入手机号" },
       {
@@ -75,6 +74,7 @@ export default class adduser extends Component {
       name="basic"
       initialValues={{ remember: true }}
       onFinish={this.onFinish}
+      onValuesChange={this.onValuesChange}
       onFinishFailed={this.onFinishFailed}
     >
       <Form.Item

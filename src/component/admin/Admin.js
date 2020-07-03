@@ -30,7 +30,6 @@ export default class Admin extends Component {
           collapsed: false,   
           id:''   
         };
-      this.state = store.getState()
     this.handleStoreChange = this.handleStoreChange.bind(this);
      //写一个方法，用this.setState更新加载的数据
      store.subscribe(this.handleStoreChange);
@@ -46,35 +45,32 @@ export default class Admin extends Component {
 
     componentDidMount(){
       const action = getTodoList()
-      store.dispatch(action);      
+      store.dispatch(action);   
+    
     }
 
-
-    practice = ()=> {
-      // 得到当前请求路径
-     let path = this.props.location.pathname.slice(1);       
-     let title;
-     let connector = {}
-     const {menus} = this.state    
-     menus.forEach((element,index)=>{ 
-      //  if(element.path === path){
-      //       console.log('element',element);        
-      //  }                    
-       if(element.children){       
-         //找到子元素第一次出现的位置
-       let ctiem = element.children.find((ctiems,index,arr)=>      
-       ctiems.path == path     
-       )        
-          if(ctiem){
-            title = ctiem.authName  
-            connector = ctiem
-            //  this.setState({
-            //     id:ctiem
-            //  })            
-          }                      
-       }
-     }) 
-    return title      
+  //强制刷新state,防止超出最大深度死循环
+  componentDidUpdate (prevProps, prevState, snapshot) {
+     if(prevState.id == this.state.id){
+        let path = this.props.location.pathname.slice(1);   
+        const {menus} = this.state   //从redux取出来的
+        menus.forEach((element,index)=>{                    
+          if(element.children){       
+            //找到子元素第一次出现的位置
+          let ctiem = element.children.find((ctiems,index,arr)=>      
+          ctiems.path == path     
+          )        
+             if(ctiem){
+            //    title = ctiem.authName          
+                this.setState({
+                   id:ctiem
+                })            
+             }                      
+          }
+        })        
+         return true
+     }   
+   
   }
 
   findIndexArray(data, id, indexArray){
@@ -101,7 +97,7 @@ export default class Admin extends Component {
             menus,
             id
         } = this.state
-        console.log(this.findIndexArray(menus, id, []))
+        console.log(this.findIndexArray(menus, 115, []))
   }
 
 
@@ -116,8 +112,8 @@ export default class Admin extends Component {
         }     
          // 得到当前请求的路由路径
     //  let path = this.props.location.pathname.slice(1);  
-    //    console.log( this.findIndexArray(menus, path, []));
-       
+
+    console.log('this.state',this.state);
         return (
             <Layout style={{ minHeight: '100vh' }}>
         <Sider collapsible collapsed={this.state.collapsed} onCollapse={this.onCollapse}>
@@ -131,7 +127,7 @@ export default class Admin extends Component {
           <Content style={{ margin: '0 16px' }}>
             <Breadcrumb style={{ margin: '16px 0' }}>
               <Breadcrumb.Item >首页</Breadcrumb.Item>
-              <Breadcrumb.Item> {          this.practice() }  </Breadcrumb.Item>
+              <Breadcrumb.Item> { }  </Breadcrumb.Item>
             </Breadcrumb>
             <div className="site-layout-background" style={{ padding: 24, minHeight: 360 }}>
               <Switch>   
