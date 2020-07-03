@@ -16,6 +16,8 @@ export default class Users extends Component {
       visible: false,
       confirmLoading: false,
     }
+
+    this.pwRef = React.createRef();
   }
   componentWillMount(){
     this.initColumns();
@@ -105,6 +107,13 @@ export default class Users extends Component {
       this.tabulatedDate()
     } 
   }
+
+  //子传父
+  setChildData = data => {
+    console.log("字串符", data);
+   
+  };
+
 
   //搜索
   onSearchBtns = async (value)=>{
@@ -211,7 +220,7 @@ export default class Users extends Component {
           confirmLoading={confirmLoading}
           onCancel={this.handleCancel}
         >
-         <AddUser />
+         <AddUser ref={this.pwRef} setChildData={this.setChildData} />
         </Modal>
       </div>
     );

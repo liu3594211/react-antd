@@ -1,121 +1,131 @@
-import React, { Component } from 'react'
-import { Form, Input, Button, Checkbox } from 'antd';
+import React, { Component } from 'react';
+import { Form, Input, Button, Select } from 'antd';
+const { Option } = Select;
+const layout = {
+  labelCol: {
+    span: 8,
+  },
+  wrapperCol: {
+    span: 16,
+  },
+};
+const tailLayout = {
+  wrapperCol: {
+    offset: 8,
+    span: 16,
+  },
+};
+class adduser extends Component {
 
+  formRef = React.createRef();
 
-export default class adduser extends Component {
-  
+  onGenderChange = value => {
 
+    console.log(value);
+    
+    // this.formRef.current.setFieldsValue({
+    //   note: `Hi, ${value === 'male' ? 'man' : 'lady'}!`,
+    // });
+  };
 
+  onFinish = values => {
+    console.log(values);
+  };
 
+  onReset = () => {
+    this.formRef.current.getFieldValue();
+     
+    console.log('this.formRef.current',this.formRef.current.getFieldValue());
+     
+  };
 
-  
-     onFinishFailed = errorInfo => {
-      console.log('Failed:', errorInfo);
-    };
-  
-    onValuesChange = value=>{
-      console.log('onValuesChange',value);
-      
-    }
-    onFinish = values => {
-      console.log('Success:', values);
-    };
-  
+  onFill = () => {
+    this.formRef.current.setFieldsValue({
+      note: 'Hello world!',
+      gender: 'male',
+    });
+  };
+
+  onFormChange = (value)=>{
+    console.log(value);
+    
+  }
+
+  onFieldsChange = (value)=>{
+    console.log(value);
+    
+  }
 
   render() {
-    const layout = {
-      labelCol: { span: 5 },
-      wrapperCol: { span: 16 },
-    };
-    const tailLayout = {
-      wrapperCol: { offset: 5, span: 16 },
-    };
-
-    const username = [
-      {
-        required: true, message: "必须输入用户名"
-      },
-      { min: 4, message: "用户名必须大于 4 位" },
-      { max: 12, message: "用户名必须小于 12 位" },
-      {
-         pattern: /^[a-zA-Z0-9_]+$/,
-         message: "用户名必须是英文、数组或下划线组成"
-      }
-    ]
-
-    const password = [
-      { required: true, message: "必须输入密码" },
-      { min: 4, message: "密码必须大于 4 位" },
-      { max: 12, message: "密码必须小于 12 位" },
-      {
-        pattern: /^[a-zA-Z0-9_]+$/,
-        message: "密码必须是英文、数组或下划线组成"
-      }
-    ]
-    const email = [   
-        { required: true, message: "请输入邮箱地址" },
-        {
-          pattern: /^\w+@\w+(\.\w+)+$/,
-          message: "请输入正确的邮箱"
-        }
-    ]
-    const phone = [   
-      { required: true, message: "请输入手机号" },
-      {
-        pattern: /^1[34578]\d{9}$/,
-        message: "请输入正确的手机号"
-      }
-  ]
-    
     return (
-      <div>
-         <Form
-      {...layout}
-      name="basic"
-      initialValues={{ remember: true }}
-      onFinish={this.onFinish}
-      onValuesChange={this.onValuesChange}
-      onFinishFailed={this.onFinishFailed}
-    >
+      <Form {...layout} ref={this.formRef} name="control-ref" onFinish={this.onFinish}>
       <Form.Item
-        label="用户名"
-        name="username"
-        rules={username}
+     
+        name="note"
+        label="Note"
+        rules={[
+          {
+            required: true,
+          },
+        ]}
       >
-        <Input />
+        <Input   placeholder="66666666" />
       </Form.Item>
-
       <Form.Item
-        label="密码"
-        name="password"
-        rules={password}
+        name="gender"
+        label="Gender"
+        rules={[
+          {
+            required: true,
+          },
+        ]}
       >
-        <Input />
+        <Select
+          placeholder="Select a option and change input text above"
+          onChange={this.onGenderChange}
+          allowClear
+        >
+          <Option value="male">male</Option>
+          <Option value="female">female</Option>
+          <Option value="other">other</Option>
+        </Select>
       </Form.Item>
-
       <Form.Item
-        label="邮箱"
-        name="email"
-        rules={email}
+        noStyle
+        shouldUpdate={(prevValues, currentValues) => prevValues.gender !== currentValues.gender}
       >
-        <Input />
+        {({ getFieldValue }) =>
+          getFieldValue('gender') === 'other' ? (
+            <Form.Item
+              name="customizeGender"
+              label="Customize Gender"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Input  />
+            </Form.Item>
+          ) : null
+        }
       </Form.Item>
-
-      <Form.Item
-        label="手机"
-        name="phone"
-        rules={phone}
-      >
-        <Input />
-      </Form.Item>
-
       <Form.Item {...tailLayout}>
         <Button type="primary" htmlType="submit">
           Submit
         </Button>
+        <Button htmlType="button" onClick={this.onReset}>
+          Reset
+        </Button>
+        <Button type="link" htmlType="button" onClick={this.onFill}>
+          Fill form
+        </Button>
       </Form.Item>
     </Form>
-      </div>
-    )
+  );
+
+
   }
 }
+
+export default adduser;
