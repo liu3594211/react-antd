@@ -1,131 +1,101 @@
-import React, { Component } from 'react';
-import { Form, Input, Button, Select } from 'antd';
-const { Option } = Select;
+import React, { Component } from 'react'
+import { Form, Input, Button, Select } from 'antd'
+const { Option } = Select
 const layout = {
   labelCol: {
-    span: 8,
+    span: 5,
   },
   wrapperCol: {
     span: 16,
   },
-};
+}
 const tailLayout = {
   wrapperCol: {
-    offset: 8,
+    offset: 5,
     span: 16,
   },
-};
+}
 class adduser extends Component {
-
-  formRef = React.createRef();
-
-  onGenderChange = value => {
-
-    console.log(value);
-    
-    // this.formRef.current.setFieldsValue({
-    //   note: `Hi, ${value === 'male' ? 'man' : 'lady'}!`,
-    // });
-  };
-
-  onFinish = values => {
-    console.log(values);
-  };
-
-  onReset = () => {
-    this.formRef.current.getFieldValue();
-     
-    console.log('this.formRef.current',this.formRef.current.getFieldValue());
-     
-  };
-
-  onFill = () => {
-    this.formRef.current.setFieldsValue({
-      note: 'Hello world!',
-      gender: 'male',
-    });
-  };
-
-  onFormChange = (value)=>{
-    console.log(value);
-    
+  formRef = React.createRef()
+  onGenderChange = (value) => {
+    console.log(value)
   }
 
-  onFieldsChange = (value)=>{
-    console.log(value);
-    
+  //让父组件可以获取到子组件的所有实例
+  componentDidMount() {
+    this.props.onRefChild(this)
+  }
+
+  onReset = () => {
+    this.formRef.current.submit()
+    const arr = this.formRef.current.getFieldsValue()
+    console.log('this.formRef.current', this.formRef.current)
+    return arr
   }
 
   render() {
+    const username = [
+      {
+        required: true,
+        message: '必须输入用户名',
+      },
+      { min: 4, message: '用户名必须大于 4 位' },
+      { max: 12, message: '用户名必须小于 12 位' },
+      {
+        pattern: /^[a-zA-Z0-9_]+$/,
+        message: '用户名必须是英文、数组或下划线组成',
+      },
+    ]
+
+    const password = [
+      { required: true, message: '必须输入密码' },
+      { min: 4, message: '密码必须大于 4 位' },
+      { max: 12, message: '密码必须小于 12 位' },
+      {
+        pattern: /^[a-zA-Z0-9_]+$/,
+        message: '密码必须是英文、数组或下划线组成',
+      },
+    ]
+    const email = [
+      { required: true, message: '请输入邮箱地址' },
+      {
+        pattern: /^\w+@\w+(\.\w+)+$/,
+        message: '请输入正确的邮箱',
+      },
+    ]
+    const phone = [
+      { required: true, message: '请输入手机号' },
+      {
+        pattern: /^1[34578]\d{9}$/,
+        message: '请输入正确的手机号',
+      },
+    ]
+
     return (
-      <Form {...layout} ref={this.formRef} name="control-ref" onFinish={this.onFinish}>
-      <Form.Item
-     
-        name="note"
-        label="Note"
-        rules={[
-          {
-            required: true,
-          },
-        ]}
+      <Form
+        {...layout}
+        ref={this.formRef}
+        name="control-ref"
+        onFinish={this.onFinish}
       >
-        <Input   placeholder="66666666" />
-      </Form.Item>
-      <Form.Item
-        name="gender"
-        label="Gender"
-        rules={[
-          {
-            required: true,
-          },
-        ]}
-      >
-        <Select
-          placeholder="Select a option and change input text above"
-          onChange={this.onGenderChange}
-          allowClear
-        >
-          <Option value="male">male</Option>
-          <Option value="female">female</Option>
-          <Option value="other">other</Option>
-        </Select>
-      </Form.Item>
-      <Form.Item
-        noStyle
-        shouldUpdate={(prevValues, currentValues) => prevValues.gender !== currentValues.gender}
-      >
-        {({ getFieldValue }) =>
-          getFieldValue('gender') === 'other' ? (
-            <Form.Item
-              name="customizeGender"
-              label="Customize Gender"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
-              <Input  />
-            </Form.Item>
-          ) : null
-        }
-      </Form.Item>
-      <Form.Item {...tailLayout}>
-        <Button type="primary" htmlType="submit">
-          Submit
-        </Button>
-        <Button htmlType="button" onClick={this.onReset}>
-          Reset
-        </Button>
-        <Button type="link" htmlType="button" onClick={this.onFill}>
-          Fill form
-        </Button>
-      </Form.Item>
-    </Form>
-  );
+        <Form.Item name="username" label="用户名" rules={username}>
+          <Input placeholder="请输入用户名" />
+        </Form.Item>
 
+        <Form.Item name="password" label="密码" rules={password}>
+          <Input.Password placeholder="请输入密码" />
+        </Form.Item>
 
+        <Form.Item name="email" label="邮箱" rules={email}>
+          <Input placeholder="请输入邮箱" />
+        </Form.Item>
+
+        <Form.Item name="phone" label="手机" rules={phone}>
+          <Input placeholder="请输入手机号" />
+        </Form.Item>
+      </Form>
+    )
   }
 }
 
-export default adduser;
+export default adduser

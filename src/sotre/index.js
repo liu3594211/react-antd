@@ -2,6 +2,7 @@
 import {
   createStore,
   applyMiddleware,
+  combinereducers,
   compose
 } from "redux";
   import reducer from './reducer';

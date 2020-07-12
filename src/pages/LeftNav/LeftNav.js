@@ -49,7 +49,10 @@ const { SubMenu } = Menu;
               
           }      
           async  componentWillMount(){
-              const data = await menuItem()            
+              const data = await menuItem()      
+              
+              console.log('data',data);
+              
              this.setState({
                resutl:data.data
                })  

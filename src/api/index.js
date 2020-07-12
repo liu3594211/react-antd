@@ -4,6 +4,9 @@ import jsonp from "jsonp";
 import { message } from 'antd';
 import React from 'react'
 import {getLocalStore} from './../config/global'
+import {
+  Redirect
+} from 'react-router-dom'
 axios.defaults.baseURL  = "http://127.0.0.1:8888/api/private/v1"; 
 
 axios.interceptors.request.use(
@@ -17,20 +20,18 @@ axios.interceptors.request.use(
   }
 )
 
-
-React.Component.prototype.$http = axios
-
-
 axios.interceptors.response.use((res)=>{ 
   if(res.data.meta.status === 400){
     message.error('token失效,请重新登录');
-    setTimeout(()=>{
-      
-      this.props.history.push("/login");
-    })
+    window.localStorage.clear()
+    return <Redirect to="/login" />
   }
   return res
 })
+
+
+React.Component.prototype.$http = axios
+
 
 // /* 登陆 */
 export const logins = params => ajax("/login", params, "POST");
@@ -46,6 +47,15 @@ export const commoditySoldutTul = params => {ajax(`users/state/`,params,'put')}
 
 //搜索用户
 export const fillForm = params => ajax('users',params,'GET')
+
+//添加用户
+export const addUserName = params => ajax('users',params,'POST')
+
+//可选角色
+export const optionalRole = params => ajax('roles',params,'GET')
+
+//权限列表
+export const jurisdictionList = params => ajax('/rights/list',params,'GET')
 
 //获取当前城市
 export const reqeather = (city)=>{
