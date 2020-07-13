@@ -5,8 +5,12 @@ import {
   DoubleRightOutlined,
   CloseOutlined,
   ExclamationCircleOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  SettingFilled,
 } from '@ant-design/icons'
 import './roles.less'
+import EditFrom from './Edit-from'
 
 const { confirm } = Modal
 export default class Roles extends Component {
@@ -14,6 +18,8 @@ export default class Roles extends Component {
     super()
     this.state = {
       tabulatedData: [],
+      visible: false,
+      userJudge: '',
     }
   }
   componentDidMount() {
@@ -37,12 +43,27 @@ export default class Roles extends Component {
       },
       { title: '角色名称', dataIndex: 'roleName', key: 'roleName' },
       { title: '角色描述', dataIndex: 'roleDesc', key: 'roleDesc' },
-      { title: 'Address', dataIndex: 'address', key: 'address' },
       {
         title: 'Action',
         dataIndex: '',
         key: 'x',
-        render: () => <a>Delete</a>,
+        render: () => {
+          return (
+            <span>
+              <Button type="primary">
+                {' '}
+                <EditOutlined /> 编辑
+              </Button>
+              <Button type="primary" danger className="edit-button">
+                <DeleteOutlined />
+                删除
+              </Button>
+              <Button type="primary">
+                <SettingFilled /> 分配权限
+              </Button>
+            </span>
+          )
+        },
       },
     ]
   }
@@ -72,6 +93,27 @@ export default class Roles extends Component {
       onCancel() {
         message.success('取消删除当前权限')
       },
+    })
+  }
+
+  showModal = () => {
+    this.setState({
+      visible: true,
+      userJudge: '添加用户',
+    })
+  }
+
+  handleOk = (e) => {
+    console.log(e)
+    this.setState({
+      visible: false,
+    })
+  }
+
+  handleCancel = (e) => {
+    console.log(e)
+    this.setState({
+      visible: false,
     })
   }
 
@@ -136,11 +178,11 @@ export default class Roles extends Component {
     )
   }
   render() {
-    const { tabulatedData } = this.state
+    const { tabulatedData, visible, userJudge } = this.state
     return (
       <div>
-        <Button type="primary" className="addUsers">
-          添加
+        <Button type="primary" className="addUsers" onClick={this.showModal}>
+          添加角色
         </Button>
         <Table
           bordered
@@ -149,6 +191,16 @@ export default class Roles extends Component {
           expandedRowRender={this.expandedRowRenderDel}
           dataSource={tabulatedData}
         />
+
+        <Modal
+          title={userJudge}
+          visible={visible}
+          onOk={this.handleOk}
+          onCancel={this.handleCancel}
+        >
+          {' '}
+          <EditFrom />{' '}
+        </Modal>
       </div>
     )
   }
