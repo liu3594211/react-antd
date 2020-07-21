@@ -1,17 +1,14 @@
 //compose用来增强函数
-import {
-  createStore,
-  applyMiddleware,
-  combinereducers,
-  compose
-} from "redux";
-  import reducer from './reducer';
-  import thunk from "redux-thunk";
-  const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
-    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) :
-    compose;
+import { createStore, applyMiddleware, combinereducers, compose } from 'redux'
+import reducer from './reducer'
+import thunk from 'redux-thunk'
+import multipleRenducer from './multipleRenducer'
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+  ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({})
+  : compose
 
-    const enhancer = composeEnhancers(applyMiddleware(thunk));
-  // const store = createStroe(reducer);
-  const store = createStore(reducer, enhancer);
-  export default store;
+const enhancer = composeEnhancers(applyMiddleware(thunk))
+
+// const store = createStroe(reducer);
+const store = createStore(reducer, enhancer)
+export default store

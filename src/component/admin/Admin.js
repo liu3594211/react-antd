@@ -1,72 +1,83 @@
-import React, { Component } from "react";
-import { getLocalStore } from "../../config/global";
-import { Layout, Breadcrumb, Button, message } from "antd";
-import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
-import Rights from "../../pages/rights/rights/Rights";
-import Roles from "../../pages/rights/roles/Roles";
-import Users from "../../pages/users/users/Users";
-import Null from "../../pages/null/null";
-import LeftNav from "../../pages/LeftNav/LeftNav";
-import Params from "../../pages/goods/Params";
-import Goods from "../../pages/goods/Goods";
-import Categories from "../../pages/goods/Categories";
-import Orders from "../../pages/orders/index";
-import Reports from "../../pages/reports/index";
-import Header from "../../pages/header/Header";
-import store from "../../sotre/index";
-import { getTodoList } from "../../sotre/actionCreators";
-import "./admin.less";
-const { Content, Footer, Sider } = Layout;
+import React, { Component } from 'react'
+import { getLocalStore } from '../../config/global'
+import { Layout, Breadcrumb, Button, message } from 'antd'
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom'
+import Rights from '../../pages/rights/rights/Rights'
+import Roles from '../../pages/rights/roles/Roles'
+import Users from '../../pages/users/users/Users'
+import Null from '../../pages/null/null'
+import LeftNav from '../../pages/LeftNav/LeftNav'
+import Params from '../../pages/goods/Params'
+import Goods from '../../pages/goods/Goods'
+import Categories from '../../pages/goods/Categories'
+import Orders from '../../pages/orders/index'
+import Reports from '../../pages/reports/index'
+import Header from '../../pages/header/Header'
+import store from '../../sotre/index'
+import { getTodoList } from '../../sotre/actionCreators'
+import { menuItem } from './../../api/index'
+import './admin.less'
+const { Content, Footer, Sider } = Layout
 export default class Admin extends Component {
   constructor() {
-    super();
+    super()
     //先绑定方法
     this.state = {
       collapsed: false,
-      id: "",
-    };
-    this.state = store.getState();
-    this.handleStoreChange = this.handleStoreChange.bind(this);
+      id: '',
+      menus: [],
+    }
+    // this.state = store.getState()
+    // this.handleStoreChange = this.handleStoreChange.bind(this)
     //写一个方法，用this.setState更新加载的数据
-    store.subscribe(this.handleStoreChange);
+    // store.subscribe(this.handleStoreChange)
   }
-  handleStoreChange() {
-    this.setState(store.getState());
-  }
+  // handleStoreChange() {
+  //   this.setState(store.getState())
+  // }
 
   onCollapse = (collapsed) => {
     this.setState({
       collapsed,
-    });
-  };
+    })
+  }
 
   componentDidMount() {
-  
-    const action = getTodoList();
-    store.dispatch(action);
+    const action = getTodoList()
+    store.dispatch(action)
+    menuItem().then((res) => {
+      this.setState(
+        {
+          menus: res.data,
+        },
+        () => {
+          console.log('粤语', this.state)
+        }
+      )
+    })
   }
 
   practice = () => {
     // 得到当前请求路径
-    let path = this.props.location.pathname.slice(1);
-    let title;
-    const { menus } = this.state;
+    let path = this.props.location.pathname.slice(1)
+    let title
+    const { menus } = this.state
     menus.forEach((element, index) => {
       if (element.children) {
         //找到子元素第一次出现的位置
         let ctiem = element.children.find(
           (ctiems, index, arr) => ctiems.path == path
-        );
+        )
         if (ctiem) {
-          title = ctiem.authName;
+          title = ctiem.authName
           this.setState({
             id: ctiem,
-          });
+          })
         }
       }
-    });
-    return title;
-  };
+    })
+    return title
+  }
   //   componentDidUpdate (prevProps, prevState, snapshot) {
 
   //     if(prevState.id == this.state.id){
@@ -92,39 +103,39 @@ export default class Admin extends Component {
 
   //  }
   findIndexArray(data, id, indexArray) {
-    let arr = Array.from(indexArray);
+    let arr = Array.from(indexArray)
     for (let i = 0, len = data.length; i < len; i++) {
-      arr.push(data[i].authName);
+      arr.push(data[i].authName)
       if (data[i].path === id) {
-        return arr;
+        return arr
       }
-      let children = data[i].children;
+      let children = data[i].children
       if (children && children.length) {
-        let result = this.findIndexArray(children, id, arr);
-        if (result) return result;
+        let result = this.findIndexArray(children, id, arr)
+        if (result) return result
       }
-      arr.pop();
+      arr.pop()
     }
-    return false;
+    return false
   }
 
   measurement = () => {
-    const { menus, id } = this.state;
-    console.log(this.findIndexArray(menus, id, []));
-  };
+    const { menus, id } = this.state
+    console.log(this.findIndexArray(menus, id, []))
+  }
 
   render() {
-    const { menus } = this.state;
+    const { menus } = this.state
     // 得到当前请求的路由路径
     //  let path = this.props.location.pathname.slice(1);
-    const token = getLocalStore("token");
+    const token = getLocalStore('token')
 
     if (!token) {
       //如果没有id的话就强制到login登录页面
-      return <Redirect to="/login" />;
+      return <Redirect to="/login" />
     }
     return (
-      <Layout style={{ minHeight: "100vh" }}>
+      <Layout style={{ minHeight: '100vh' }}>
         <Sider
           collapsible
           collapsed={this.state.collapsed}
@@ -138,8 +149,8 @@ export default class Admin extends Component {
             className="site-layout-background"
             style={{ padding: 0 }}
           ></Header>
-          <Content style={{ margin: "0 16px" }}>
-            <Breadcrumb style={{ margin: "16px 0" }}>
+          <Content style={{ margin: '0 16px' }}>
+            <Breadcrumb style={{ margin: '16px 0' }}>
               <Breadcrumb.Item> 首页 </Breadcrumb.Item>
               <Breadcrumb.Item> {} </Breadcrumb.Item>
             </Breadcrumb>
@@ -152,28 +163,28 @@ export default class Admin extends Component {
             >
               <Switch>
                 <Redirect from="/" exact to="/users" />
-                <Route path="/rights" component={Rights} />{" "}
-                <Route path="/roles" component={Roles} />{" "}
-                <Route path="/users" component={Users} />{" "}
-                <Route path="/params" component={Params} />{" "}
-                <Route path="/goods" component={Goods} />{" "}
-                <Route path="/categories" component={Categories} />{" "}
-                <Route path="/orders" component={Orders} />{" "}
-                <Route path="/reports" component={Reports} />{" "}
-                <Route path="/null" component={Null} />{" "}
-                <Route component={Null} />{" "}
-              </Switch>{" "}
-            </div>{" "}
-          </Content>{" "}
+                <Route path="/rights" component={Rights} />{' '}
+                <Route path="/roles" component={Roles} />{' '}
+                <Route path="/users" component={Users} />{' '}
+                <Route path="/params" component={Params} />{' '}
+                <Route path="/goods" component={Goods} />{' '}
+                <Route path="/categories" component={Categories} />{' '}
+                <Route path="/orders" component={Orders} />{' '}
+                <Route path="/reports" component={Reports} />{' '}
+                <Route path="/null" component={Null} />{' '}
+                <Route component={Null} />{' '}
+              </Switch>{' '}
+            </div>{' '}
+          </Content>{' '}
           <Footer
             style={{
-              textAlign: "center",
+              textAlign: 'center',
             }}
           >
-            Ant Design© 2018 Created by Ant UED{" "}
-          </Footer>{" "}
-        </Layout>{" "}
+            Ant Design© 2018 Created by Ant UED{' '}
+          </Footer>{' '}
+        </Layout>{' '}
       </Layout>
-    );
+    )
   }
 }

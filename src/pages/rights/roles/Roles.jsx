@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Button, Table, Tag, Row, Col, Modal, message } from 'antd'
-import { optionalRole } from './../../../api/index'
+import { optionalRole, addRole } from './../../../api/index'
 import {
   DoubleRightOutlined,
   CloseOutlined,
@@ -47,14 +47,25 @@ export default class Roles extends Component {
         title: 'Action',
         dataIndex: '',
         key: 'x',
-        render: () => {
+        render: (e) => {
           return (
             <span>
-              <Button type="primary">
-                {' '}
+              <Button
+                type="primary"
+                onClick={() => {
+                  this.editUser(e)
+                }}
+              >
                 <EditOutlined /> 编辑
               </Button>
-              <Button type="primary" danger className="edit-button">
+              <Button
+                type="primary"
+                onClick={() => {
+                  this.roleDelete(e)
+                }}
+                danger
+                className="edit-button"
+              >
                 <DeleteOutlined />
                 删除
               </Button>
@@ -102,18 +113,62 @@ export default class Roles extends Component {
       userJudge: '添加用户',
     })
   }
+  graceful = (ref) => {
+    this.children = ref
+    console.log(ref)
+  }
 
-  handleOk = (e) => {
-    console.log(e)
+  handleOk = async (e) => {
+    const vicissitude = this.children.onFinish()
+    if (vicissitude.roleName && vicissitude.roleDesc) {
+      const data = await addRole(vicissitude)
+      if (data.meta.status === 201) {
+        message.success('添加角色成功')
+        this.permissionList()
+      } else {
+        message.error('添加角色失败')
+      }
+      this.setState({
+        visible: false,
+      })
+    }
+  }
+
+  handleCancel = (e) => {
     this.setState({
       visible: false,
     })
   }
 
-  handleCancel = (e) => {
+  //删除角色
+  roleDelete = (e) => {
+    console.log(e)
+    const that = this
+    confirm({
+      title: '提示！',
+      icon: <ExclamationCircleOutlined />,
+      content: '是否删除当前角色',
+      async onOk() {
+        console.log('OK')
+        const { data: res } = await that.$http.delete(`roles/${e.id}`)
+        if (res.meta.status == 200) {
+          message.success('删除当前角色成功')
+        } else {
+          message.error('删除当前角色失败')
+        }
+      },
+      onCancel() {
+        message.success('取消删除当前角色')
+      },
+    })
+  }
+
+  //编辑角色
+  editUser = (e) => {
     console.log(e)
     this.setState({
-      visible: false,
+      visible: true,
+      userJudge: '编辑用户',
     })
   }
 
@@ -198,8 +253,7 @@ export default class Roles extends Component {
           onOk={this.handleOk}
           onCancel={this.handleCancel}
         >
-          {' '}
-          <EditFrom />{' '}
+          <EditFrom graceful={this.graceful} />
         </Modal>
       </div>
     )

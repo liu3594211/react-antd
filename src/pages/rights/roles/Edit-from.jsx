@@ -1,13 +1,20 @@
 import React, { Component } from 'react'
 import { Form, Input } from 'antd'
 export default class EditFrom extends Component {
-  onFinish = (values) => {
-    console.log('Success:', values)
+  constructor(props) {
+    super(props)
+    this.character = React.createRef()
+    console.log(props)
+  }
+  componentDidMount() {
+    this.props.graceful(this)
+  }
+  onFinish = () => {
+    this.character.current.submit()
+    const arr = this.character.current.getFieldsValue()
+    return arr
   }
 
-  onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo)
-  }
   render() {
     const layout = {
       labelCol: { span: 5 },
@@ -20,15 +27,14 @@ export default class EditFrom extends Component {
     return (
       <div>
         <Form
+          ref={this.character}
           {...layout}
           name="basic"
           initialValues={{ remember: true }}
-          onFinish={this.onFinish}
-          onFinishFailed={this.onFinishFailed}
         >
           <Form.Item
             label="角色名称"
-            name="username"
+            name="roleName"
             rules={[{ required: true, message: '请输入角色名称!' }]}
           >
             <Input />
@@ -36,7 +42,7 @@ export default class EditFrom extends Component {
 
           <Form.Item
             label="角色描述"
-            name="Userdescribe"
+            name="roleDesc"
             rules={[{ required: true, message: '请输入角色描述!' }]}
           >
             <Input />

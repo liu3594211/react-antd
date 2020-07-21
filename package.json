@@ -8,6 +8,7 @@
     "axios": "^0.19.2",
     "craco-less": "^1.17.0",
     "jsonp": "^0.2.1",
+    "prop-types": "^15.7.2",
     "react": "^16.11.0",
     "react-bmap": "^1.0.117",
     "react-dom": "^16.11.0",
