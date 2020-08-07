@@ -26,11 +26,12 @@ import {
 import AddUser from './../addUser/adduser'
 import AssignRoles from './../assignRoles/AssignRoles'
 import Compile from './Compile'
+import { connect } from 'react-redux'
 import './user.less'
 const { Search } = Input
 const { confirm } = Modal
 
-export default class Users extends Component {
+class Users extends Component {
   constructor(props) {
     super()
     this.state = {
@@ -44,6 +45,7 @@ export default class Users extends Component {
     this.pwRef = React.createRef()
   }
   componentWillMount() {
+    console.log('props', this.props)
     this.initColumns()
     this.tabulatedDate()
   }
@@ -83,7 +85,7 @@ export default class Users extends Component {
       },
       {
         title: '电话',
-        dataIndex: 'create_time',
+        dataIndex: 'mobile',
         align: 'center',
       },
       {
@@ -159,9 +161,7 @@ export default class Users extends Component {
   }
 
   //子传父
-  setChildData = (data) => {
-    console.log('字串符', data)
-  }
+  setChildData = (data) => {}
   //搜索
   onSearchBtns = async (value) => {
     const data = await fillForm({
@@ -282,18 +282,23 @@ export default class Users extends Component {
   validation = (refs) => {
     this.breeze = refs
   }
-  compileRoles = () => {
+  compileRoles = async () => {
     const fors = this.breeze.onFinish()
-    console.log(this.breeze.onFinish())
-    console.log(this.state.modificationUser.id)
-
-    const { data: res } = this.$http.put(
-      `/api/private/v1/users/${this.state.modificationUser.id}`,
+    const res = await this.$http.put(
+      `/users/${this.state.modificationUser.id}`,
       {
         email: fors.email,
         mobile: fors.mobile,
       }
     )
+    if (res.status === 200) {
+      this.commodityList('1')
+      message.success('修改用户信息成功!')
+    }
+
+    this.setState({
+      visible: 0,
+    })
   }
 
   render() {
@@ -369,3 +374,11 @@ export default class Users extends Component {
     )
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    todo: state,
+  }
+}
+
+export default connect(mapStateToProps)(Users)

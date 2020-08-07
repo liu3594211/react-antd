@@ -57,6 +57,19 @@ export const jurisdictionList = (params) => ajax('/rights/list', params, 'GET')
 //添加角色
 export const addRole = (params) => ajax('/roles', params, 'POST')
 
+//树形控件权限
+export const treeJurisdiction = (params) => ajax('/rights/tree', params, 'GET')
+
+//商品列表
+export const productList = (params) => ajax('/goods', params, 'GET')
+
+//商品分类
+export const productClassify = (params) => ajax('/categories', params, 'GET')
+
+//添加商品分类
+export const addProductClassify = (params) =>
+  ajax('/categories', params, 'POST')
+
 //获取当前城市
 export const reqeather = (city) => {
   return new Promise((resolve, reject) => {

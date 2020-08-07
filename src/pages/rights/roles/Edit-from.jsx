@@ -1,20 +1,57 @@
 import React, { Component } from 'react'
 import { Form, Input } from 'antd'
-export default class EditFrom extends Component {
+import { connect } from 'react-redux'
+class EditFrom extends Component {
   constructor(props) {
     super(props)
     this.character = React.createRef()
-    console.log(props)
+    this.state = {
+      playback: {},
+    }
   }
   componentDidMount() {
     this.props.graceful(this)
   }
+
+  //在还没有render之前执行
+  componentWillMount() {
+    this.setState({
+      playback: this.props.todo.addUser,
+    })
+  }
+
+  //动态props和state更新的生命周期
+  componentWillUpdate(nextProps, nextState) {
+    console.log('nextProps', nextProps)
+    console.log('nextState', nextState)
+    if (nextProps.todo.addUser !== this.props.todo.addUser) {
+      // this.setState(
+      //   {
+      //     playback: nextProps.todo.addUser,
+      //   },
+      //   () => {}
+      // )
+      console.log('操作', this.character)
+      console.log('操作2', this.character.current)
+      //解决initialValues不能动态赋值的问题
+      this.character.current.setFieldsValue({
+        roleName: nextProps.todo.addUser.roleName,
+        roleDesc: nextProps.todo.addUser.roleDesc,
+      })
+      return true
+    }
+  }
   onFinish = () => {
     this.character.current.submit()
     const arr = this.character.current.getFieldsValue()
+
     return arr
   }
 
+  //清除from表单
+  resetFields = () => {
+    this.character.current.resetFields()
+  }
   render() {
     const layout = {
       labelCol: { span: 5 },
@@ -23,14 +60,15 @@ export default class EditFrom extends Component {
     const tailLayout = {
       wrapperCol: { offset: 5, span: 19 },
     }
+    console.log('render', this.state)
 
     return (
       <div>
         <Form
           ref={this.character}
           {...layout}
+          initialValues={this.state.playback}
           name="basic"
-          initialValues={{ remember: true }}
         >
           <Form.Item
             label="角色名称"
@@ -52,3 +90,11 @@ export default class EditFrom extends Component {
     )
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    todo: state.addUser,
+  }
+}
+
+export default connect(mapStateToProps)(EditFrom)

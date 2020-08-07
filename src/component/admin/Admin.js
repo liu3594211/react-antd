@@ -14,8 +14,11 @@ import Orders from '../../pages/orders/index'
 import Reports from '../../pages/reports/index'
 import Header from '../../pages/header/Header'
 import store from '../../sotre/index'
+import AddItem from './../../pages/goods/AddItem'
 import { getTodoList } from '../../sotre/actionCreators'
+import { Provider } from 'react-redux'
 import { menuItem } from './../../api/index'
+
 import './admin.less'
 const { Content, Footer, Sider } = Layout
 export default class Admin extends Component {
@@ -135,56 +138,59 @@ export default class Admin extends Component {
       return <Redirect to="/login" />
     }
     return (
-      <Layout style={{ minHeight: '100vh' }}>
-        <Sider
-          collapsible
-          collapsed={this.state.collapsed}
-          onCollapse={this.onCollapse}
-        >
-          <div className="logo" />
-          <LeftNav />
-        </Sider>
-        <Layout className="site-layout">
-          <Header
-            className="site-layout-background"
-            style={{ padding: 0 }}
-          ></Header>
-          <Content style={{ margin: '0 16px' }}>
-            <Breadcrumb style={{ margin: '16px 0' }}>
-              <Breadcrumb.Item> 首页 </Breadcrumb.Item>
-              <Breadcrumb.Item> {} </Breadcrumb.Item>
-            </Breadcrumb>
-            <div
+      <Provider store={store}>
+        <Layout style={{ minHeight: '100vh' }}>
+          <Sider
+            collapsible
+            collapsed={this.state.collapsed}
+            onCollapse={this.onCollapse}
+          >
+            <div className="logo" />
+            <LeftNav />
+          </Sider>
+          <Layout className="site-layout">
+            <Header
               className="site-layout-background"
+              style={{ padding: 0 }}
+            ></Header>
+            <Content style={{ margin: '0 16px' }}>
+              <Breadcrumb style={{ margin: '16px 0' }}>
+                <Breadcrumb.Item> 首页 </Breadcrumb.Item>
+                <Breadcrumb.Item> {} </Breadcrumb.Item>
+              </Breadcrumb>
+              <div
+                className="site-layout-background"
+                style={{
+                  padding: 24,
+                  minHeight: 360,
+                }}
+              >
+                <Switch>
+                  <Redirect from="/" exact to="/users" />
+                  <Route path="/rights" component={Rights} />{' '}
+                  <Route path="/roles" component={Roles} />{' '}
+                  <Route path="/users" component={Users} />{' '}
+                  <Route path="/params" component={Params} />{' '}
+                  <Route path="/goods" component={Goods} />{' '}
+                  <Route path="/categories" component={Categories} />{' '}
+                  <Route path="/orders" component={Orders} />{' '}
+                  <Route path="/reports" component={Reports} />{' '}
+                  <Route path="/additem" component={AddItem} />{' '}
+                  <Route path="/null" component={Null} />{' '}
+                  <Route component={Null} />{' '}
+                </Switch>{' '}
+              </div>{' '}
+            </Content>{' '}
+            <Footer
               style={{
-                padding: 24,
-                minHeight: 360,
+                textAlign: 'center',
               }}
             >
-              <Switch>
-                <Redirect from="/" exact to="/users" />
-                <Route path="/rights" component={Rights} />{' '}
-                <Route path="/roles" component={Roles} />{' '}
-                <Route path="/users" component={Users} />{' '}
-                <Route path="/params" component={Params} />{' '}
-                <Route path="/goods" component={Goods} />{' '}
-                <Route path="/categories" component={Categories} />{' '}
-                <Route path="/orders" component={Orders} />{' '}
-                <Route path="/reports" component={Reports} />{' '}
-                <Route path="/null" component={Null} />{' '}
-                <Route component={Null} />{' '}
-              </Switch>{' '}
-            </div>{' '}
-          </Content>{' '}
-          <Footer
-            style={{
-              textAlign: 'center',
-            }}
-          >
-            Ant Design© 2018 Created by Ant UED{' '}
-          </Footer>{' '}
-        </Layout>{' '}
-      </Layout>
+              Ant Design© 2018 Created by Ant UED{' '}
+            </Footer>{' '}
+          </Layout>{' '}
+        </Layout>
+      </Provider>
     )
   }
 }

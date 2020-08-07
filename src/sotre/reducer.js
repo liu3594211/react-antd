@@ -1,7 +1,7 @@
 import { MAP_LOCATION, ASYNCHRONUS_DATA } from './actionTypes'
 
 const defaultState = {
-  city: '',
+  city: '963',
   menus: [],
 }
 

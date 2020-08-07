@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Table, Tag, Row, Col, Modal, message } from 'antd'
+import { Button, Table, Tag, Row, Col, Modal, message, Pagination } from 'antd'
 import { optionalRole, addRole } from './../../../api/index'
 import {
   DoubleRightOutlined,
@@ -10,16 +10,20 @@ import {
   SettingFilled,
 } from '@ant-design/icons'
 import './roles.less'
+import { connect } from 'react-redux'
+import TreeControl from './Tree-control'
 import EditFrom from './Edit-from'
 
 const { confirm } = Modal
-export default class Roles extends Component {
+class Roles extends Component {
   constructor() {
     super()
     this.state = {
       tabulatedData: [],
-      visible: false,
+      visible: 0,
       userJudge: '',
+      checkBox: false,
+      roles_id: '',
     }
   }
   componentDidMount() {
@@ -69,7 +73,12 @@ export default class Roles extends Component {
                 <DeleteOutlined />
                 删除
               </Button>
-              <Button type="primary">
+              <Button
+                type="primary"
+                onClick={() => {
+                  this.authorityDistribution(e)
+                }}
+              >
                 <SettingFilled /> 分配权限
               </Button>
             </span>
@@ -81,7 +90,6 @@ export default class Roles extends Component {
 
   //根据id删除子集
   deleteLevel = (data, record) => {
-    console.log(data, record)
     let that = this
     confirm({
       title: '提示?',
@@ -109,47 +117,63 @@ export default class Roles extends Component {
 
   showModal = () => {
     this.setState({
-      visible: true,
+      visible: 1,
       userJudge: '添加用户',
     })
   }
   graceful = (ref) => {
+    console.log('编辑的ref', ref)
     this.children = ref
-    console.log(ref)
   }
 
-  handleOk = async (e) => {
+  //添加用户
+  handleOk = async () => {
     const vicissitude = this.children.onFinish()
-    if (vicissitude.roleName && vicissitude.roleDesc) {
-      const data = await addRole(vicissitude)
-      if (data.meta.status === 201) {
-        message.success('添加角色成功')
+    if (this.state.userJudge === '添加用户') {
+      if (vicissitude.roleName && vicissitude.roleDesc) {
+        const data = await addRole(vicissitude)
+        if (data.meta.status === 201) {
+          message.success('添加角色成功')
+          this.permissionList()
+          this.children.resetFields()
+        } else {
+          message.error('添加角色失败')
+        }
+        this.setState({
+          visible: 0,
+        })
+      }
+    } else {
+      const res = await this.$http.put(`/roles/${this.props.todo.addUser.id}`, {
+        ...vicissitude,
+        roleId: this.props.todo.addUser.id,
+      })
+      if (res.status === 200) {
+        message.success('修改修改角色成功')
         this.permissionList()
       } else {
-        message.error('添加角色失败')
+        message.success('修改修改角色失败')
       }
       this.setState({
-        visible: false,
+        visible: 0,
       })
     }
   }
 
   handleCancel = (e) => {
     this.setState({
-      visible: false,
+      visible: 0,
     })
   }
 
   //删除角色
   roleDelete = (e) => {
-    console.log(e)
     const that = this
     confirm({
       title: '提示！',
       icon: <ExclamationCircleOutlined />,
       content: '是否删除当前角色',
       async onOk() {
-        console.log('OK')
         const { data: res } = await that.$http.delete(`roles/${e.id}`)
         if (res.meta.status == 200) {
           message.success('删除当前角色成功')
@@ -165,10 +189,60 @@ export default class Roles extends Component {
 
   //编辑角色
   editUser = (e) => {
-    console.log(e)
+    this.props.onIncreateClick(e)
     this.setState({
-      visible: true,
+      visible: 1,
       userJudge: '编辑用户',
+    })
+  }
+
+  //分配权限
+  authorityDistribution = (e) => {
+    this.props.onIncreateClickTree(e.children)
+    this.setState({
+      visible: 2,
+      checkBox: true,
+      roles_id: e.id,
+    })
+  }
+
+  onControldel = (a) => {
+    this.treeControlcur = a
+  }
+
+  //确定权限
+  confirmTree = async () => {
+    console.log('777', this.treeControlcur.thinking())
+    let think = this.treeControlcur.thinking()
+    const arr = []
+    think.forEach((element) => {
+      arr.push(parseInt(element))
+    })
+    const str = arr.join(',')
+    const res = await this.$http.post(`/roles/${this.state.roles_id}/rights`, {
+      rids: str,
+    })
+    console.log('res', res)
+    if (res.status === 200) {
+      message.success('分配权限成功')
+      this.permissionList()
+    } else {
+      message.error('分配失败成功')
+    }
+    this.setState({
+      visible: 0,
+      checkBox: false,
+    })
+    if (think.length > 0) {
+    } else {
+    }
+  }
+
+  jurisdiction = () => {
+    // document.location.reload()
+    this.setState({
+      visible: 0,
+      checkBox: false,
     })
   }
 
@@ -233,7 +307,26 @@ export default class Roles extends Component {
     )
   }
   render() {
-    const { tabulatedData, visible, userJudge } = this.state
+    const { tabulatedData, visible, userJudge, checkBox } = this.state
+    const PopUp = () => {
+      if (checkBox) {
+        return (
+          <div>
+            <Modal
+              title={userJudge}
+              visible={visible === 2}
+              onOk={this.confirmTree}
+              onCancel={this.jurisdiction}
+            >
+              <TreeControl onControldel={this.onControldel} />
+            </Modal>
+          </div>
+        )
+      } else {
+        return <div></div>
+      }
+    }
+
     return (
       <div>
         <Button type="primary" className="addUsers" onClick={this.showModal}>
@@ -249,13 +342,38 @@ export default class Roles extends Component {
 
         <Modal
           title={userJudge}
-          visible={visible}
+          visible={visible === 1}
           onOk={this.handleOk}
           onCancel={this.handleCancel}
         >
           <EditFrom graceful={this.graceful} />
         </Modal>
+
+        <PopUp />
       </div>
     )
   }
 }
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onIncreateClick: (item) => {
+      dispatch({
+        type: 'SET_VISIBILITY_FILTER',
+        value: item,
+      })
+    },
+    onIncreateClickTree: (item) => {
+      dispatch({
+        type: 'CONSTANT_CLICK_TREE',
+        tree: item,
+      })
+    },
+  }
+}
+const mapStateToProps = (state) => {
+  return {
+    todo: state.addUser,
+  }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Roles)
