@@ -18,6 +18,13 @@ class LeftNav extends Component {
   state = {
     resutl: [],
     navBar: '',
+    keyPath: ['110', '125'],
+  }
+  onOpenChange = (key) => {}
+  onClick = (a) => {
+    this.setState({
+      keyPath: a.keyPath,
+    })
   }
   //递归渲染菜单列表
   getMenuNodes = (menuList) => {
@@ -34,6 +41,8 @@ class LeftNav extends Component {
         return (
           <SubMenu
             key={item.id}
+            onOpenChange={this.onOpenChange}
+            onClick={this.onClick}
             icon={<UserOutlined />}
             title={
               <span>
@@ -59,8 +68,8 @@ class LeftNav extends Component {
     const dis = this.state.resutl
 
     // 得到当前请求的路由路径
-    let path = this.props.location.pathname
-
+    let path = this.props
+    console.log('999', this.state.keyPath)
     return (
       <div>
         <Menu
@@ -68,8 +77,8 @@ class LeftNav extends Component {
           theme="dark"
           mode="inline"
           onOpenChange={this.onOpenChange}
-          defaultOpenKeys={[111]}
-          selectedKeys={[101]}
+          defaultOpenKeys={this.state.keyPath}
+          selectedKeys={this.state.keyPath}
         >
           {this.getMenuNodes(dis)}
         </Menu>

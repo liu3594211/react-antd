@@ -53,9 +53,7 @@ export default class Admin extends Component {
         {
           menus: res.data,
         },
-        () => {
-          console.log('粤语', this.state)
-        }
+        () => {}
       )
     })
   }
